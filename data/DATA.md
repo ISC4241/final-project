@@ -19,7 +19,7 @@ The goal is to understand what patterns of engagement and involvement lead to pa
 
 ---
 
-## Feature Blocks
+## Raw Data Features
 
 ### 1. Tenure
 
@@ -87,6 +87,29 @@ The goal is to understand what patterns of engagement and involvement lead to pa
 
 ---
 
+## Engineered Features
+
+These features are derived from the raw data during the `feature-engineering` pipeline to capture non-linear signals and simplify noisy categories.
+
+### 1. Event Refinement
+
+| Feature               | Type         | Description                                                                                                |
+| --------------------- | ------------ | ---------------------------------------------------------------------------------------------------------- |
+| **n_other_events**    | Integer      | `events_attended_year - (n_workshops_year + n_socials_year)`. Captures GBMs, Kickoffs, Projects, etc.      |
+| **other_ratio**       | Float        | `n_other_events / events_attended_year`. Fraction of attendance that was non-workshop/non-social.          |
+| **is_discord_active** | Binary (0/1) | 1 if `discord_msgs_year > 0`, else 0. Captures whether the user is active on Discord regardless of volume. |
+
+### 2. Demographic Grouping
+
+| Feature            | Type        | Description                                                                                  |
+| ------------------ | ----------- | -------------------------------------------------------------------------------------------- |
+| **school_grouped** | Categorical | **UCF**: Includes 'University of Central Florida'. **Other**: All other institutions.        |
+| **major_grouped**  | Categorical | **Tech**: CS, IT, Data, Cyber, etc. **Other**: Non-tech majors.                              |
+| **level_grouped**  | Categorical | **Undergraduate**: All undergrad levels. **Grad/Other**: Graduate students or not specified. |
+| **tenure_years**   | Float       | `member_days_since_join / 365.0`. Tenure converted to years for interpretability.            |
+
+---
+
 **Missing data handling**
 
 -   Null counts → 0.
@@ -95,8 +118,6 @@ The goal is to understand what patterns of engagement and involvement lead to pa
 
 **Imputation strategy for training:**
 
--   `workshop_ratio` / `social_ratio`: Impute with `0` when `events_attended_year = 0` (semantically correct: no events = no workshops/socials).
+-   `workshop_ratio` / `social_ratio` / `other_ratio`: Impute with `0` when `events_attended_year = 0` (semantically correct: no events = no specific types).
 -   `avg_event_rating_given`: Impute with mean of all non-null ratings (preserves distribution).
 -   `discord_days_since_join`: Impute with `-1` when `discord_member = 0` (clear sentinel for "not a Discord member").
-
----
