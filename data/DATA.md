@@ -31,15 +31,29 @@ The goal is to understand what patterns of engagement and involvement lead to pa
 
 ### 2. Event Attendance (per year)
 
-| Feature                      | Type    | Description                                                                         |
-| ---------------------------- | ------- | ----------------------------------------------------------------------------------- |
-| **events_attended_year**     | Integer | Total number of events attended (via `EventAttendee`).                              |
-| **distinct_event_days_year** | Integer | Number of unique calendar days with attendance.                                     |
-| **attendance_streak_weeks**  | Integer | Longest run of consecutive weeks where the member attended ≥1 event.                |
-| **n_workshops_year**         | Integer | Number of workshop-tagged events attended.                                          |
-| **n_socials_year**           | Integer | Number of social-tagged events attended.                                            |
-| **workshop_ratio**           | Float   | `n_workshops_year / events_attended_year` (fraction of events that were workshops). |
-| **social_ratio**             | Float   | `n_socials_year / events_attended_year` (fraction of events that were socials).     |
+| Feature                      | Type    | Description                                                                                       |
+| ---------------------------- | ------- | ------------------------------------------------------------------------------------------------- |
+| **events_attended_year**     | Integer | Total number of events attended (via `EventAttendee`).                                            |
+| **distinct_event_days_year** | Integer | Number of unique calendar days with attendance.                                                   |
+| **attendance_streak_weeks**  | Integer | Longest run of consecutive weeks where the member attended ≥1 event.                              |
+| **n_gbm_year**               | Integer | Number of General Body Meeting (GBM) events attended.                                             |
+| **gbm_ratio**                | Float   | `n_gbm_year / events_attended_year` (fraction of events that were GBMs).                          |
+| **n_social_year**            | Integer | Number of social-tagged events attended.                                                          |
+| **social_ratio**             | Float   | `n_social_year / events_attended_year` (fraction of events that were socials).                    |
+| **n_hello_world_year**       | Integer | Number of Hello World events attended.                                                            |
+| **hello_world_ratio**        | Float   | `n_hello_world_year / events_attended_year` (fraction of events that were Hello World).           |
+| **n_sponsorship_year**       | Integer | Number of sponsorship-related events attended.                                                    |
+| **sponsorship_ratio**        | Float   | `n_sponsorship_year / events_attended_year` (fraction of events that were sponsorship).           |
+| **n_tech_exploration_year**  | Integer | Number of tech exploration events attended.                                                       |
+| **tech_exploration_ratio**   | Float   | `n_tech_exploration_year / events_attended_year` (fraction of events that were tech exploration). |
+| **n_class_support_year**     | Integer | Number of class support events attended.                                                          |
+| **class_support_ratio**      | Float   | `n_class_support_year / events_attended_year` (fraction of events that were class support).       |
+| **n_workshop_year**          | Integer | Number of workshop-tagged events attended.                                                        |
+| **workshop_ratio**           | Float   | `n_workshop_year / events_attended_year` (fraction of events that were workshops).                |
+| **n_ops_year**               | Integer | Number of Ops (operations) events attended.                                                       |
+| **ops_ratio**                | Float   | `n_ops_year / events_attended_year` (fraction of events that were Ops).                           |
+| **n_collabs_year**           | Integer | Number of collaboration events attended.                                                          |
+| **collabs_ratio**            | Float   | `n_collabs_year / events_attended_year` (fraction of events that were collaborations).            |
 
 ---
 
@@ -91,13 +105,16 @@ The goal is to understand what patterns of engagement and involvement lead to pa
 
 These features are derived from the raw data during the `feature-engineering` pipeline to capture non-linear signals and simplify noisy categories.
 
-### 1. Event Refinement
+### 1. Event Refinement / Interaction Terms
 
-| Feature               | Type         | Description                                                                                                |
-| --------------------- | ------------ | ---------------------------------------------------------------------------------------------------------- |
-| **n_other_events**    | Integer      | `events_attended_year - (n_workshops_year + n_socials_year)`. Captures GBMs, Kickoffs, Projects, etc.      |
-| **other_ratio**       | Float        | `n_other_events / events_attended_year`. Fraction of attendance that was non-workshop/non-social.          |
-| **is_discord_active** | Binary (0/1) | 1 if `discord_msgs_year > 0`, else 0. Captures whether the user is active on Discord regardless of volume. |
+| Feature                | Type         | Description                                                                                                          |
+| ---------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------- |
+| **engagement_breadth** | Integer      | Count of distinct event _types_ (GBM, Workshop, etc.) attended. Measures if a member is a "generalist".              |
+| **is_discord_active**  | Binary (0/1) | 1 if `discord_msgs_year > 0`, else 0. Captures whether the user is active on Discord regardless of volume.           |
+| **tech_score**         | Integer      | Sum of `n_workshop_year`, `n_collabs_year`, `n_hello_world_year`, `n_tech_exploration_year`, `n_class_support_year`. |
+| **social_score**       | Integer      | Sum of `n_social_year`, `n_gbm_year`.                                                                                |
+| **tech_social_ratio**  | Float        | `tech_score / (social_score + 1)`.                                                                                   |
+| **is_sponsor_hunter**  | Binary (0/1) | 1 if `n_sponsorship_year / events_attended_year >= 0.8`, else 0.                                                     |
 
 ### 2. Demographic Grouping
 
@@ -118,6 +135,6 @@ These features are derived from the raw data during the `feature-engineering` pi
 
 **Imputation strategy for training:**
 
--   `workshop_ratio` / `social_ratio` / `other_ratio`: Impute with `0` when `events_attended_year = 0` (semantically correct: no events = no specific types).
--   `avg_event_rating_given`: Impute with mean of all non-null ratings (preserves distribution).
+-   All event ratio fields (`gbm_ratio`, `social_ratio`, `hello_world_ratio`, `sponsorship_ratio`, `tech_exploration_ratio`, `class_support_ratio`, `workshop_ratio`, `ops_ratio`, `collabs_ratio`): Impute with `0` when `events_attended_year = 0` (semantically correct: no events = no specific types).
+-   `avg_event_rating_given`: Impute with -1 for all non-null ratings (preserves distribution).
 -   `discord_days_since_join`: Impute with `-1` when `discord_member = 0` (clear sentinel for "not a Discord member").
