@@ -91,13 +91,13 @@ The goal is to understand what patterns of engagement and involvement lead to pa
 
 ### 6. Demographics
 
-| Feature               | Type        | Description                                              |
-| --------------------- | ----------- | -------------------------------------------------------- |
-| **level_of_study**    | Categorical | Member’s level of study (e.g., Undergraduate, Graduate). |
-| **major**             | Categorical | Member’s declared major.                                 |
-| **school**            | Categorical | University or college the member is associated with.     |
-| **gender**            | Categorical | Member’s gender (self-reported).                         |
-| **race_or_ethnicity** | Categorical | Member’s race or ethnicity (self-reported).              |
+| Feature               | Type        | Description                                                 |
+| --------------------- | ----------- | ----------------------------------------------------------- |
+| **class**             | Categorical | Member's class standing (e.g., Freshman, Senior, Graduate). |
+| **major**             | Categorical | Member’s declared major.                                    |
+| **school**            | Categorical | University or college the member is associated with.        |
+| **gender**            | Categorical | Member’s gender (self-reported).                            |
+| **race_or_ethnicity** | Categorical | Member’s race or ethnicity (self-reported).                 |
 
 ---
 
@@ -118,12 +118,9 @@ These features are derived from the raw data during the `feature-engineering` pi
 
 ### 2. Demographic Grouping
 
-| Feature            | Type        | Description                                                                                  |
-| ------------------ | ----------- | -------------------------------------------------------------------------------------------- |
-| **school_grouped** | Categorical | **UCF**: Includes 'University of Central Florida'. **Other**: All other institutions.        |
-| **major_grouped**  | Categorical | **Tech**: CS, IT, Data, Cyber, etc. **Other**: Non-tech majors.                              |
-| **level_grouped**  | Categorical | **Undergraduate**: All undergrad levels. **Grad/Other**: Graduate students or not specified. |
-| **tenure_years**   | Float       | `member_days_since_join / 365.0`. Tenure converted to years for interpretability.            |
+| Feature            | Type        | Description                                                                           |
+| ------------------ | ----------- | ------------------------------------------------------------------------------------- |
+| **school_grouped** | Categorical | **UCF**: Includes 'University of Central Florida'. **Other**: All other institutions. |
 
 ---
 
